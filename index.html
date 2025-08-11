@@ -48,13 +48,13 @@
 
 <script>
 const stages = [
-  { name: "Notice", question: "You see strange footprints in the sand. What should you do first?", options: ["Ignore them", "Examine them closely"], answer: "Examine them closely" },
-  { name: "Empathize", question: "Your teammate is scared of crossing a rope bridge. What should you do?", options: ["Tell them to hurry up", "Ask how you can help"], answer: "Ask how you can help" },
-  { name: "Define", question: "You find a locked treasure chest. What's the problem to solve?", options: ["The lock needs to be opened", "It’s too heavy"], answer: "The lock needs to be opened" },
-  { name: "Ideate", question: "Which is the best brainstorming rule?", options: ["Judge ideas quickly", "Come up with many ideas first"], answer: "Come up with many ideas first" },
-  { name: "Prototype", question: "You design a trap detector. What's the first step?", options: ["Test it with small traps", "Use it in a real temple"], answer: "Test it with small traps" },
-  { name: "Test", question: "You try your new map. What's important?", options: ["See if it works in different situations", "Only try it once"], answer: "See if it works in different situations" },
-  { name: "Reflect", question: "After the quest, you...", options: ["Think about what worked and what didn’t", "Forget everything"], answer: "Think about what worked and what didn’t" }
+  { name: "Notice", question: "You see strange footprints in the sand. What should you do first?", options: ["Ignore them", "Examine them closely", "Ask ChatGPT"], answer: "Examine them closely" },
+  { name: "Empathize", question: "Your teammate is scared of crossing a rope bridge. What should you do?", options: ["Tell them to hurry up", "Push them from behind", "Ask how you can help"], answer: "Ask how you can help" },
+  { name: "Define", question: "You find a locked treasure chest. What's the problem to solve?", options: ["The lock needs to be opened", "It’s too heavy", "Where did it come from?"], answer: "The lock needs to be opened" },
+  { name: "Ideate", question: "Which is the best brainstorming rule?", options: ["Judge ideas quickly", "Come up with many ideas first", "Don't mention crazy ideas"], answer: "Come up with many ideas first" },
+  { name: "Prototype", question: "You design a trap detector. What's the first step?", options: ["Try to sell it on Amazon", "Test it with small traps", "Use it in a real temple"], answer: "Test it with small traps" },
+  { name: "Test", question: "You try out your new map. What's important next?", options: ["See if it works in different situations", "Only try it once", "Assume it's perfect"], answer: "See if it works in different situations" },
+  { name: "Reflect", question: "After the quest, you...", options: ["Quickly move onto the next thing", "Think about what worked and what didn’t", "Forget everything"], answer: "Think about what worked and what didn’t" }
 ];
 
 let completedStages = [];
@@ -72,7 +72,7 @@ function renderGame() {
   });
   document.getElementById("game").innerHTML = html;
   if (completedStages.length === stages.length) {
-    document.getElementById("game").innerHTML = "<h2>🎉 You found the treasure! 🎉</h2>";
+    document.getElementById("game").innerHTML = "<h2>🎉 You found the treasure... a new car is on its way to you! 🎉</h2>";
     document.getElementById("fanfare").play();
   }
 }
