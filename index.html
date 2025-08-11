@@ -11,11 +11,12 @@
     text-align: center;
   }
   .stage {
-    margin: 20px;
+    margin: 20px auto;
     padding: 20px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
     border: 3px solid gold;
     border-radius: 10px;
+    width: 60%;
   }
   button {
     background-color: goldenrod;
@@ -23,6 +24,8 @@
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
   }
 </style>
 </head>
@@ -31,8 +34,8 @@
 <h1>🏺 Indiana Jones: The Design Thinking Quest 🗺️</h1>
 <p>Complete all 7 stages to uncover the treasure of creativity!</p>
 
-<audio id="bgMusic" loop autoplay>
-  <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_1f44a7cbb3.mp3?filename=adventure-theme-8963.mp3" type="audio/mpeg">
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2021/09/15/audio_6e3a56ec8e.mp3?filename=epic-adventure-theme-11277.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="fanfare">
@@ -45,18 +48,25 @@
 
 <script>
 const stages = [
-  "Notice", "Empathize", "Define", "Ideate", "Prototype", "Test", "Reflect"
+  { name: "Notice", question: "You see strange footprints in the sand. What should you do first?", options: ["Ignore them", "Examine them closely"], answer: "Examine them closely" },
+  { name: "Empathize", question: "Your teammate is scared of crossing a rope bridge. What should you do?", options: ["Tell them to hurry up", "Ask how you can help"], answer: "Ask how you can help" },
+  { name: "Define", question: "You find a locked treasure chest. What's the problem to solve?", options: ["The lock needs to be opened", "It’s too heavy"], answer: "The lock needs to be opened" },
+  { name: "Ideate", question: "Which is the best brainstorming rule?", options: ["Judge ideas quickly", "Come up with many ideas first"], answer: "Come up with many ideas first" },
+  { name: "Prototype", question: "You design a trap detector. What's the first step?", options: ["Test it with small traps", "Use it in a real temple"], answer: "Test it with small traps" },
+  { name: "Test", question: "You try your new map. What's important?", options: ["See if it works in different situations", "Only try it once"], answer: "See if it works in different situations" },
+  { name: "Reflect", question: "After the quest, you...", options: ["Think about what worked and what didn’t", "Forget everything"], answer: "Think about what worked and what didn’t" }
 ];
+
 let completedStages = [];
 
 function renderGame() {
   let html = '';
   stages.forEach(stage => {
-    if (!completedStages.includes(stage)) {
+    if (!completedStages.includes(stage.name)) {
       html += `<div class='stage'>
-        <h2>${stage}</h2>
-        <p>Complete this task to move forward.</p>
-        <button onclick="completeStage('${stage}')">Complete Stage</button>
+        <h2>${stage.name}</h2>
+        <p>${stage.question}</p>
+        ${stage.options.map(opt => `<button onclick="checkAnswer('${stage.name}', '${opt}')">${opt}</button>`).join(' ')}
       </div>`;
     }
   });
@@ -67,9 +77,15 @@ function renderGame() {
   }
 }
 
-function completeStage(stage) {
-  completedStages.push(stage);
-  renderGame();
+function checkAnswer(stageName, chosen) {
+  let stage = stages.find(s => s.name === stageName);
+  if (chosen === stage.answer) {
+    alert("✅ Correct! You advance to the next stage.");
+    completedStages.push(stageName);
+    renderGame();
+  } else {
+    alert("❌ Not quite. Try again!");
+  }
 }
 
 function toggleMusic() {
@@ -81,8 +97,15 @@ function toggleMusic() {
   }
 }
 
+// Start game after user clicks something so music can play
+document.body.addEventListener('click', function initMusic() {
+  document.getElementById("bgMusic").play();
+  document.body.removeEventListener('click', initMusic);
+});
+
 renderGame();
 </script>
 
 </body>
 </html>
+
