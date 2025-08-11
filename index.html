@@ -1,298 +1,88 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Indy: Design Thinking Quest — Classroom Edition</title>
-  <style>
-    :root{--bg:#071022;--card:#0c1220;--accent:#c9a24b;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071022 0%, #0b1220 100%);color:#e6eef6}
-    .app{max-width:1100px;margin:18px auto;padding:18px}
-    header{display:flex;align-items:center;gap:14px}
-    .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,#2b2b2b,#0b1220);display:flex;align-items:center;justify-content:center}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:0;color:var(--muted)}
-    .layout{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
-    .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,0.5)}
-    .stages{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .stage-btn{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:6px}
-    .stage-btn.locked{opacity:0.5}
-    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
-    .small{font-size:13px;color:var(--muted)}
-    .score{font-weight:700;color:var(--accent)}
-    /* Notice */
-    .notice-rows{display:flex;gap:10px}
-    .notice-img{width:48%;border-radius:8px;border:3px solid rgba(255,255,255,0.03)}
-    .diff-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-    .diff-item{padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);cursor:pointer}
-    .diff-item.correct{outline:3px solid rgba(34,197,94,0.9)}
-    /* Ideate */
-    .ideas{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-    .idea{padding:8px;background:rgba(255,255,255,0.02);border-radius:6px}
-    /* Prototype */
-    .parts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .part{padding:8px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:grab}
-    .canvas{min-height:180px;border-radius:8px;border:2px dashed rgba(255,255,255,0.04);padding:8px;margin-top:8px}
-    /* Test */
-    .tester{padding:8px;background:rgba(255,255,255,0.02);border-radius:6px;margin-top:6px}
-    /* Reflect */
-    .reflect-list{display:flex;flex-direction:column;gap:8px}
-    /* Leaderboard */
-    .leaderboard{display:flex;flex-direction:column;gap:6px}
-    /* responsive */
-    @media (max-width:940px){.layout{grid-template-columns:1fr}.right-col{order:2}}
-    button{background:#13202b;border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
-    input,textarea{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:#fff;padding:8px;border-radius:6px}
-    .hint{font-size:13px;color:#9aa4b2}
-  </style>
+<title>Indiana Jones: Design Thinking Quest</title>
+<style>
+  body {
+    background: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Treasure Map Deadhand', cursive;
+    color: gold;
+    text-align: center;
+  }
+  .stage {
+    margin: 20px;
+    padding: 20px;
+    background: rgba(0,0,0,0.7);
+    border: 3px solid gold;
+    border-radius: 10px;
+  }
+  button {
+    background-color: goldenrod;
+    color: black;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="logo" aria-hidden>
-        <svg viewBox="0 0 24 24" width="36" height="36" fill="none"><path d="M2 21h20L12 2 2 21z" stroke="#c9a24b" stroke-width="1.6" stroke-linejoin="round"/></svg>
-      </div>
-      <div>
-        <h1>Indy: Design Thinking Quest — Classroom Edition</h1>
-        <p class="lead">7 focused, assessed mini-games that teach NOTICE → EMPATHIZE → DEFINE → IDEATE → PROTOTYPE → TEST → REFLECT</p>
-      </div>
-      <div style="margin-left:auto;text-align:right">
-        <div class="score" id="score">Score: 0</div>
-        <div class="small" id="progress">0/7 stages</div>
-      </div>
-    </header>
 
-    <div class="layout">
-      <div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <strong id="stageTitle">Choose a stage</strong>
-            <div class="small">Class Mode: <select id="classMode"><option value="team">Teams</option><option value="individual">Individual</option></select></div>
-          </div>
-          <p class="small" id="stageDesc">Each stage contains a short, scaffolded activity with embedded assets, scoring, and teacher feedback options.</p>
+<h1>🏺 Indiana Jones: The Design Thinking Quest 🗺️</h1>
+<p>Complete all 7 stages to uncover the treasure of creativity!</p>
 
-          <div class="stages" id="stages"></div>
+<audio id="bgMusic" loop autoplay>
+  <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_1f44a7cbb3.mp3?filename=adventure-theme-8963.mp3" type="audio/mpeg">
+</audio>
 
-          <div class="controls">
-            <button id="reset">Restart</button>
-            <button id="downloadLog">Download Log (CSV)</button>
-            <div class="hint">Teacher settings available — click the gear ⚙️</div>
-          </div>
-        </div>
+<audio id="fanfare">
+  <source src="https://cdn.pixabay.com/download/audio/2021/09/06/audio_69b1d4a3f4.mp3?filename=fanfare-triumph-6966.mp3" type="audio/mpeg">
+</audio>
 
-        <div style="height:12px"></div>
+<button onclick="toggleMusic()">🎵 Toggle Music</button>
 
-        <div id="stageCard" class="card">
-          <div id="stageContent">Select a stage to load a robust, scaffolded activity. Each stage includes instructions, assets (images or tools), a rubric, and auto-scoring.</div>
-        </div>
-
-      </div>
-
-      <div class="right-col">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center"><strong>Class Leaderboard</strong><div class="small">Local only</div></div>
-          <div id="leaderboard" class="leaderboard" style="margin-top:8px">No plays yet</div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="card">
-          <strong>Teacher Notes</strong>
-          <div class="small" style="margin-top:8px">This edition adds rigorous scoring rubrics, required assets (inline SVGs, drag/drop parts, drawing canvas, randomized testers), timed challenges, and CSV export for teacher records.</div>
-        </div>
-      </div>
-    </div>
-
-    <footer style="margin-top:14px;color:var(--muted);font-size:13px">Embed: host this file (GitHub Pages/Glitch) and iframe into Google Sites. Want me to prepare the repo-ready file?</footer>
-  </div>
+<div id="game"></div>
 
 <script>
-// ---------- Data & assets ----------
-const STAGES = [
-  {key:'notice', title:'Notice', desc:'Spot 5 differences between two camp scenes. Timer + accuracy rubric', assets:true},
-  {key:'empathize', title:'Empathize', desc:'Conduct a quick interview and choose prioritized needs. Personas & consequence scoring', assets:true},
-  {key:'define', title:'Define', desc:'Write a strong POV. Auto-rubric checks for user, need, insight and constraints', assets:false},
-  {key:'ideate', title:'Ideate', desc:'Timed divergent thinking sprint. Creativity meter & novelty bonus', assets:false},
-  {key:'prototype', title:'Prototype', desc:'Drag parts or sketch on canvas. Must include 3 core features', assets:true},
-  {key:'test', title:'Test', desc:'Simulated testers give feedback; you pick actionable changes. Scored on responsiveness', assets:true},
-  {key:'reflect', title:'Reflect', desc:'Structured reflection with rubric; exportable responses', assets:false}
+const stages = [
+  "Notice", "Empathize", "Define", "Ideate", "Prototype", "Test", "Reflect"
 ];
+let completedStages = [];
 
-let state = {score:0,completed:[],log:[],players:{},currentPlayer:'Team A'};
-// local leaderboard persisted
-const LB_KEY='indy_dt_leaderboard_v1';
-
-// --- helper UI ---
-const stagesEl=document.getElementById('stages');
-const stageTitle=document.getElementById('stageTitle');
-const stageDesc=document.getElementById('stageDesc');
-const stageContent=document.getElementById('stageContent');
-const scoreEl=document.getElementById('score');
-const progressEl=document.getElementById('progress');
-const leaderboardEl=document.getElementById('leaderboard');
-
-function renderStageButtons(){stagesEl.innerHTML='';STAGES.forEach(s=>{
-  const btn=document.createElement('div');btn.className='stage-btn';btn.dataset.key=s.key;btn.innerHTML=`<strong>${s.title}</strong><div class='small'>${s.desc}</div>`;
-  btn.addEventListener('click', ()=>loadStage(s.key));stagesEl.appendChild(btn);
-});}
-
-function updateScore(delta,reason){state.score+=delta;scoreEl.textContent='Score: '+state.score;if(reason) state.log.push({t:new Date().toISOString(), action:reason, change:delta, total:state.score});}
-function markComplete(key,points){if(!state.completed.includes(key)) state.completed.push(key);updateProgress();if(points) updateScore(points,'Completed '+key);} 
-function updateProgress(){progressEl.textContent=`${state.completed.length}/7 stages`;renderLeaderboard();}
-
-function saveLeaderboardEntry(name,score){let lb=JSON.parse(localStorage.getItem(LB_KEY)||'[]');lb.push({name,score,date:new Date().toISOString()});lb.sort((a,b)=>b.score-a.score);localStorage.setItem(LB_KEY,JSON.stringify(lb.slice(0,20)));renderLeaderboard();}
-function renderLeaderboard(){let lb=JSON.parse(localStorage.getItem(LB_KEY)||'[]');if(lb.length===0) leaderboardEl.textContent='No plays yet'; else{leaderboardEl.innerHTML='';lb.forEach((e,i)=>{const div=document.createElement('div');div.className='small';div.textContent=`${i+1}. ${e.name} — ${e.score} pts (${new Date(e.date).toLocaleString()})`;leaderboardEl.appendChild(div);});}}
-
-// ---------- Notice stage (robust) ----------
-const NOTICE_SCENES = generateNoticeScenes();
-function generateNoticeScenes(){// generate a few inline SVG scenes and differences sets
-  // We'll create 3 scenes; each scene has sceneA (svg string), sceneB (svg string), diffs array
-  const scenes=[];
-  // Scene 1
-  const a1 = `<svg xmlns='http://www.w3.org/2000/svg' width='700' height='260'><rect width='100%' height='100%' fill='%23121a1f'/><text x='18' y='26' fill='%23c9a24b' font-size='18'>Camp A</text><circle cx='80' cy='180' r='14' fill='%23f4f4f4'/><rect x='140' y='140' width='60' height='40' fill='%236b3b1e'/><rect x='340' y='80' width='80' height='10' fill='%23f59e0b' /></svg>`;
-  const b1 = `<svg xmlns='http://www.w3.org/2000/svg' width='700' height='260'><rect width='100%' height='100%' fill='%23121a1f'/><text x='18' y='26' fill='%23c9a24b' font-size='18'>Camp B</text><rect x='140' y='140' width='60' height='40' fill='%236b3b1e'/><rect x='340' y='80' width='0' height='0' fill='%23f59e0b' /><circle cx='80' cy='180' r='0' fill='%23f4f4f4'/><ellipse cx='520' cy='200' rx='12' ry='6' fill='%23a3a3ff'/></svg>`;
-  scenes.push({a:a1,b:b1,diffs:[{id:'gem','label':'Missing gem near the camp'}, {id:'torch','label':'Torch removed from pole'}, {id:'foot','label':'Footprints added by tent'}]});
-  // Scene 2 simple
-  const a2=`<svg xmlns='http://www.w3.org/2000/svg' width='700' height='260'><rect width='100%' height='100%' fill='%23121a1f'/><text x='18' y='26' fill='%23c9a24b' font-size='18'>Market A</text><rect x='220' y='120' width='80' height='40' fill='%237c4d2a'/><circle cx='420' cy='80' r='18' fill='%23ffd54f'/></svg>`;
-  const b2=`<svg xmlns='http://www.w3.org/2000/svg' width='700' height='260'><rect width='100%' height='100%' fill='%23121a1f'/><text x='18' y='26' fill='%23c9a24b' font-size='18'>Market B</text><rect x='220' y='120' width='80' height='40' fill='%237c4d2a'/><circle cx='420' cy='80' r='0' fill='%23ffd54f'/><rect x='80' y='40' width='40' height='10' fill='%23ff6666'/></svg>`;
-  scenes.push({a:a2,b:b2,diffs:[{id:'sun','label':'Sun removed from sky'},{id:'flag','label':'New red banner'},{id:'stall','label':'Extra market stall'}]});
-  return scenes;
-}
-
-function loadNotice(){const scene = NOTICE_SCENES[Math.floor(Math.random()*NOTICE_SCENES.length)];
-  stageTitle.textContent='Notice — Spot the differences';stageDesc.textContent='You must find the 3 key differences. Accurate clicks + time bonus earn rubric points.';
-  stageContent.innerHTML=`
-    <div class='notice-rows'>
-      <div class='notice-img' id='sceneA'>${scene.a}</div>
-      <div class='notice-img' id='sceneB'>${scene.b}</div>
-    </div>
-    <div class='small'>Click items you think changed. You need ${scene.diffs.length} correct picks.</div>
-    <div class='diff-list' id='diffList'></div>
-    <div style='margin-top:10px'><button id='submitNotice'>Submit</button> <span class='hint' id='noticeTimer'></span></div>
-  `;
-  const diffList=document.getElementById('diffList');
-  // shuffle labels
-  const labels = scene.diffs.map(d=>d.label).concat(['Random rock','Old rope','Extra crate']);
-  shuffle(labels).forEach(l=>{const el=document.createElement('div');el.className='diff-item';el.textContent=l;el.addEventListener('click', ()=>el.classList.toggle('selected'));diffList.appendChild(el);});
-  // timer
-  let t=45;const timerEl=document.getElementById('noticeTimer');timerEl.textContent=`Time: ${t}s`;
-  const iv=setInterval(()=>{t--;timerEl.textContent=`Time: ${t}s`; if(t<=0){clearInterval(iv);evaluateNotice(scene);} },1000);
-  document.getElementById('submitNotice').addEventListener('click', ()=>{clearInterval(iv);evaluateNotice(scene);});
-}
-function evaluateNotice(scene){const selected=[...document.querySelectorAll('.diff-item.selected')].map(n=>n.textContent);
-  const correctLabels = scene.diffs.map(d=>d.label);
-  let hits=selected.filter(s=>correctLabels.includes(s)).length;let misses=selected.length-hits;let score=hits*20 - misses*5; // rigorous scoring
-  if(hits===correctLabels.length) score+=30; // perfect bonus
-  updateScore(score,'Notice stage result');
-  stageContent.innerHTML=`<div><strong>Results</strong><div class='small'>Correct: ${hits}/${correctLabels.length}</div><div class='small'>Score change: ${score}</div><div style='margin-top:8px'><button id='continue1'>Continue</button></div></div>`;
-  document.getElementById('continue1').addEventListener('click', ()=>{markComplete('notice');loadSummary()});
-}
-
-// ---------- Empathize stage (role-play + prioritization) ----------
-const PERSONAS = [
-  {name:'Marco the Trader', story:'Long trip; worried about thieves; low on food; needs to sell goods quickly.', wants:['Food','Guide','Map'], decoys:['Money','Animal feed']},
-  {name:'Lina the Explorer', story:'Young archaeologist; wants clear artifact provenance and safety', wants:['Safety gear','Documentation','Guide'], decoys:['Luxury tent']}
-];
-function loadEmpathize(){const p = PERSONAS[Math.floor(Math.random()*PERSONAS.length)];stageTitle.textContent='Empathize — Interview & Prioritize';stageDesc.textContent='Read the persona, ask clarifying questions (choose from prompts), then prioritize top 3 needs.';
-  stageContent.innerHTML=`<div><strong>${p.name}</strong><p class='small'>${p.story}</p>
-    <div><em class='small'>Choose questions to ask:</em><div style='display:flex;gap:6px;margin-top:6px' id='questions'></div></div>
-    <div style='margin-top:10px'><em class='small'>Pick top 3 needs</em><div id='needs' style='display:flex;gap:6px;margin-top:6px'></div></div>
-    <div style='margin-top:10px'><button id='submitEmp'>Submit</button></div>
-  </div>`;
-  const qbox=document.getElementById('questions');['Where will you go?','How do you travel?','What worries you most?','Who helps you?'].forEach(q=>{const b=document.createElement('button');b.className='part';b.textContent=q;b.addEventListener('click', ()=>{b.disabled=true;updateScore(2,'Asked good question');});qbox.appendChild(b)});
-  const needsBox=document.getElementById('needs');const allNeeds=[...p.wants,...p.decoys];shuffle(allNeeds).forEach(n=>{const b=document.createElement('div');b.className='part';b.textContent=n;b.dataset.sel='0';b.addEventListener('click', ()=>{b.dataset.sel=b.dataset.sel==='0'?'1':'0';b.style.opacity=b.dataset.sel==='1'?1:0.6});needsBox.appendChild(b)});
-  document.getElementById('submitEmp').addEventListener('click', ()=>{const selected=[...needsBox.children].filter(x=>x.dataset.sel==='1').map(x=>x.textContent);if(selected.length!==3){alert('Please select exactly 3 needs (top priority).');return;}let hits=selected.filter(s=>p.wants.includes(s)).length;let sc=hits*25 - (3-hits)*10;updateScore(sc,'Empathize result');stageContent.innerHTML=`<div><strong>Empathize complete</strong><div class='small'>Matches: ${hits}/3 — Score: ${sc}</div><div style='margin-top:8px'><button id='cont2'>Continue</button></div></div>`;document.getElementById('cont2').addEventListener('click', ()=>{markComplete('empathize');loadSummary();});});
-}
-
-// ---------- Define stage (auto-rubric) ----------
-function scoreDefine(text){const lower=text.toLowerCase();let score=0; if(lower.includes('marco')||lower.includes('trader')) score+=10; if(lower.match(/need|wants|needs/)) score+=15; if(lower.includes('map')||lower.includes('guide')) score+=15; if(lower.length>80) score+=10; return score;}
-function loadDefine(){stageTitle.textContent='Define — Build a Point Of View (POV)';stageDesc.textContent='Write a one-sentence POV including user, need and insight. The system gives an immediate rubric score.';
-  stageContent.innerHTML=`<div><label>POV (one or two sentences)</label><textarea id='povText' style='width:100%;height:110px'></textarea><div style='margin-top:8px'><button id='scorePov'>Score POV</button></div><div id='povResult' class='small' style='margin-top:8px'></div></div>`;
-  document.getElementById('scorePov').addEventListener('click', ()=>{const t=document.getElementById('povText').value.trim();if(t.length<20){alert('Make it longer & specific.');return;}const s=scoreDefine(t);updateScore(s,'Define POV scored');document.getElementById('povResult').textContent=`Rubric score: ${s} (max ~50)`; if(s>30){markComplete('define');}});
-}
-
-// ---------- Ideate stage (timed sprint + novelty) ----------
-function loadIdeate(){stageTitle.textContent='Ideate — Rapid idea generation';stageDesc.textContent='1-minute sprint. Each idea=3 points; novelty bonus for uncommon words.';
-  stageContent.innerHTML=`<div><div class='small'>Start the sprint and type as many ideas as you can. Use one-word novelty to get bonuses.</div>
-    <div style='display:flex;gap:6px;margin-top:8px'><input id='ideaInput' placeholder='Idea...'><button id='startSprint'>Start 60s</button><button id='addIdea'>Add</button></div>
-    <div class='ideas' id='ideas'></div>
-  </div>`;
-  let time=60;let iv;const ideas=[];const input=document.getElementById('ideaInput');const ideasEl=document.getElementById('ideas');
-  document.getElementById('startSprint').addEventListener('click', ()=>{if(iv) return;iv=setInterval(()=>{time--;document.getElementById('startSprint').textContent=`${time}s`; if(time<=0){clearInterval(iv);finishIdeate();}},1000);});
-  document.getElementById('addIdea').addEventListener('click', ()=>{const v=input.value.trim();if(!v) return;ideas.push(v);const el=document.createElement('div');el.className='idea';el.textContent=v;ideasEl.appendChild(el);input.value='';updateScore(3,'Idea added');});
-  function finishIdeate(){// novelty bonus: count unusual words
-    const all=ideas.join(' ').toLowerCase();let novelty=0;['portable','versatile','collapsible','modular','waterproof','interactive'].forEach(w=>{if(all.includes(w)) novelty+=10});if(ideas.length>=7) novelty+=20;updateScore(novelty,'Ideation bonuses');markComplete('ideate');stageContent.innerHTML=`<div><strong>Ideation complete</strong><div class='small'>Ideas: ${ideas.length} — novelty: ${novelty}</div><div style='margin-top:8px'><button id='cont3'>Continue</button></div></div>`;document.getElementById('cont3').addEventListener('click', loadSummary);} 
-}
-
-// ---------- Prototype stage (drag parts + sketch) ----------
-function loadPrototype(){stageTitle.textContent='Prototype — Build or Sketch';stageDesc.textContent='Drag at least 3 core parts OR draw a mockup using the sketch tool. Save your prototype (data URL) to submit.';
-  stageContent.innerHTML=`<div><div class='small'>Parts:</div><div class='parts' id='parts'></div>
-    <div class='canvas' id='protoCanvas'><div class='small'>(Drop parts here or draw)</div><canvas id='draw' width='640' height='200' style='border-radius:8px;width:100%'></canvas></div>
-    <div style='margin-top:8px'><button id='saveProto'>Save Prototype</button><span class='small' id='protoHint'></span></div>
-  </div>`;
-  const allParts=['Map','Compass','Strap','Pouch','Waterproof case','Clip'];const partsEl=document.getElementById('parts');allParts.forEach(p=>{const d=document.createElement('div');d.className='part';d.textContent=p;d.draggable=true;d.addEventListener('dragstart', e=>e.dataTransfer.setData('text/plain',p));partsEl.appendChild(d);});
-  const canvasDrop=document.getElementById('protoCanvas');canvasDrop.addEventListener('dragover', e=>e.preventDefault());canvasDrop.addEventListener('drop', e=>{e.preventDefault();const p=e.dataTransfer.getData('text/plain');const el=document.createElement('div');el.className='part';el.textContent=p;canvasDrop.appendChild(el);updateScore(8,'Prototype part added');});
-  // simple drawing
-  const canvas=document.getElementById('draw');const ctx=canvas.getContext('2d');ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,0,canvas.width,canvas.height);let drawing=false;canvas.addEventListener('pointerdown', e=>{drawing=true;ctx.beginPath();ctx.moveTo(e.offsetX*canvas.width/canvas.clientWidth,e.offsetY*canvas.height/canvas.clientHeight)});
-  canvas.addEventListener('pointermove', e=>{if(!drawing) return;ctx.lineTo(e.offsetX*canvas.width/canvas.clientWidth,e.offsetY*canvas.height/canvas.clientHeight);ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});canvas.addEventListener('pointerup', ()=>drawing=false);canvas.addEventListener('pointerleave', ()=>drawing=false);
-  document.getElementById('saveProto').addEventListener('click', ()=>{const totalParts=canvasDrop.querySelectorAll('.part').length;const img=canvas.toDataURL('image/png');let points=0;if(totalParts>=3) points+=40; // prototyping completeness
-    // small heuristic: white pixels count
-    updateScore(points,'Prototype saved');markComplete('prototype');stageContent.innerHTML=`<div><strong>Prototype saved</strong><div class='small'>Parts used: ${totalParts} — Score: ${points}</div><div style='margin-top:8px'><button id='cont4'>Continue</button></div></div>`;document.getElementById('cont4').addEventListener('click', loadSummary);});
-}
-
-// ---------- Test stage (simulated testers) ----------
-const TESTERS = [
-  {name:'Trader Joe', priorities:['easy to hold','clear map'], praise:'Very usable', issue:'no strap'},
-  {name:'Guard Ana', priorities:['durable','fast access'], praise:'Sturdy', issue:'hard to open'}
-];
-function loadTest(){stageTitle.textContent='Test — Get feedback & act';stageDesc.textContent='Simulated testers will provide feedback based on your prototype description. Choose actions to respond.';
-  stageContent.innerHTML=`<div><label>Describe your prototype in one sentence</label><input id='protoDesc' placeholder='A collapsible map holder with strap and pouch'>
-    <div style='margin-top:8px'><button id='runTest'>Run Test</button></div>
-    <div id='testerArea'></div>
-  </div>`;
-  document.getElementById('runTest').addEventListener('click', ()=>{const desc=document.getElementById('protoDesc').value.trim();if(!desc){alert('Describe it first');return;}const ta=document.getElementById('testerArea');ta.innerHTML='';const chosen = TESTERS[Math.floor(Math.random()*TESTERS.length)];ta.innerHTML=`<div class='tester'><strong>${chosen.name}</strong><div class='small'>Says: "${chosen.praise}. Issue: ${chosen.issue}."</div>
-      <div style='margin-top:8px'><button id='fix'>Address issue (Add strap)</button><button id='note'>Take note (Do later)</button></div></div>`;
-    document.getElementById('fix').addEventListener('click', ()=>{updateScore(30,'Test fix accepted');ta.innerHTML=`<div class='small'>${chosen.name} re-tested and approves. +30</div><div style='margin-top:8px'><button id='cont5'>Continue</button></div>`;document.getElementById('cont5').addEventListener('click', ()=>{markComplete('test');loadSummary();})});
-    document.getElementById('note').addEventListener('click', ()=>{updateScore(0,'Test note logged');ta.appendChild(Object.assign(document.createElement('div'),{className:'small',textContent:'Note saved. No immediate points.'}));});
+function renderGame() {
+  let html = '';
+  stages.forEach(stage => {
+    if (!completedStages.includes(stage)) {
+      html += `<div class='stage'>
+        <h2>${stage}</h2>
+        <p>Complete this task to move forward.</p>
+        <button onclick="completeStage('${stage}')">Complete Stage</button>
+      </div>`;
+    }
   });
+  document.getElementById("game").innerHTML = html;
+  if (completedStages.length === stages.length) {
+    document.getElementById("game").innerHTML = "<h2>🎉 You found the treasure! 🎉</h2>";
+    document.getElementById("fanfare").play();
+  }
 }
 
-// ---------- Reflect stage (structured) ----------
-function loadReflect(){stageTitle.textContent='Reflect — Capture learnings & next steps';stageDesc.textContent='Complete 3 reflection prompts. Teacher rubric evaluates depth.';
-  stageContent.innerHTML=`<div><ol><li><textarea id='r1' placeholder='What worked?'></textarea></li><li><textarea id='r2' placeholder='What would you change?'></textarea></li><li><textarea id='r3' placeholder='Next steps or experiment?'></textarea></li></ol><div style='margin-top:8px'><button id='submitRef'>Submit Reflection</button></div></div>`;
-  document.getElementById('submitRef').addEventListener('click', ()=>{const a=document.getElementById('r1').value.trim(),b=document.getElementById('r2').value.trim(),c=document.getElementById('r3').value.trim();if(!a||!b||!c){alert('Answer all prompts');return;}let scr=0;[a,b,c].forEach(t=>{if(t.length>60) scr+=15; else scr+=5});updateScore(scr,'Reflection submitted');markComplete('reflect');stageContent.innerHTML=`<div><strong>Reflection saved</strong><div class='small'>Score: ${scr}</div><div style='margin-top:8px'><button id='cont6'>Continue</button></div></div>`;document.getElementById('cont6').addEventListener('click', loadSummary);});
+function completeStage(stage) {
+  completedStages.push(stage);
+  renderGame();
 }
 
-// ---------- Summary & teacher export ----------
-function loadSummary(){stageTitle.textContent='Stage summary';stageDesc.textContent='Review results and move to next stage.';
-  stageContent.innerHTML=`<div><strong>Current Score: ${state.score}</strong><div class='small'>Completed: ${state.completed.join(', ')}</div>
-    <div style='margin-top:8px'><label>Save to leaderboard name:</label><div style='display:flex;gap:6px;margin-top:6px'><input id='lbname' placeholder='Team A'><button id='saveLB'>Save</button></div></div>
-    <div style='margin-top:8px'><button id='backToMenu'>Back to menu</button></div>
-  </div>`;
-  document.getElementById('saveLB').addEventListener('click', ()=>{const n=document.getElementById('lbname').value.trim()||'Team';saveLeaderboardEntry(n,state.score);});
-  document.getElementById('backToMenu').addEventListener('click', ()=>{renderStageButtons();stageTitle.textContent='Choose a stage';stageDesc.textContent='';stageContent.innerHTML='Select a stage to load a robust, scaffolded activity.'});
+function toggleMusic() {
+  let music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+  } else {
+    music.pause();
+  }
 }
 
-// ---------- Utilities & routing ----------
-function loadStage(key){if(key==='notice') loadNotice(); else if(key==='empathize') loadEmpathize(); else if(key==='define') loadDefine(); else if(key==='ideate') loadIdeate(); else if(key==='prototype') loadPrototype(); else if(key==='test') loadTest(); else if(key==='reflect') loadReflect();}
-
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-
-// export CSV
-function downloadLogCSV(){const rows=[['timestamp','action','change','total']].concat(state.log.map(r=>[r.t,r.action,r.change,r.total]));
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""') }"`).join(',')).join('
-');
-  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='indy_log.csv';a.click();}
-
-// reset
-function resetAll(){state={score:0,completed:[],log:[],players:{},currentPlayer:'Team A'};scoreEl.textContent='Score: 0';updateProgress();renderStageButtons();stageContent.innerHTML='Select a stage to load a robust, scaffolded activity.'}
-
-// init
-renderStageButtons();renderLeaderboard();document.getElementById('reset').addEventListener('click', resetAll);document.getElementById('downloadLog').addEventListener('click', downloadLogCSV);
-
-// expose for teacher debugging
-window.__indyState=state;
-
+renderGame();
 </script>
+
 </body>
 </html>
