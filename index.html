@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Indy: Design Thinking Quest</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#c9a24b;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef6;background:linear-gradient(180deg,#071022 0%, #0f1724 100%)}
+    .app{max-width:1100px;margin:18px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:72px;height:72px;border-radius:10px;background:linear-gradient(135deg,#2b2b2b,#111827);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    .logo svg{width:48px;height:48px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted)}
+    .board{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+
+    .stage-card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 26px rgba(2,6,23,0.5);min-height:360px}
+    .map{background:linear-gradient(180deg,#16222a,#0b1220);padding:14px;border-radius:12px;min-height:600px}
+    .stages{display:flex;flex-wrap:wrap;gap:10px}
+    .stage{flex:1 1 30%;min-width:200px;background:var(--glass);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .stage.locked{opacity:0.45}
+    .stage.active{outline:2px solid rgba(201,162,75,0.14);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    .stage h3{margin:2px 0;font-size:15px}
+    .controls{display:flex;gap:8px;margin-top:12px;align-items:center}
+
+    .right{position:relative}
+    .panel{background:var(--card);padding:12px;border-radius:12px;min-height:120px}
+    .score{font-size:20px;color:var(--accent);font-weight:700}
+    .badge{display:inline-block;background:rgba(201,162,75,0.12);color:var(--accent);padding:6px 10px;border-radius:999px}
+
+    /* Notice mini game */
+    .notice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+    .notice-grid img{width:100%;height:90px;object-fit:cover;border-radius:6px;border:2px solid transparent}
+    .notice-grid img.correct{outline:4px solid rgba(34,197,94,0.9)}
+    .notice-grid img.wrong{opacity:0.6}
+
+    /* prototype area */
+    .prototype-canvas{min-height:180px;border:2px dashed rgba(255,255,255,0.04);padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .draggables{display:flex;gap:8px;margin-top:8px}
+    .chip{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:6px;cursor:grab}
+
+    /* small screens */
+    @media (max-width:920px){.board{grid-template-columns:1fr}.right{order:2}.map{order:1}}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo" aria-hidden>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M2 21h20L12 2 2 21z" stroke="#c9a24b" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h1>Indy: Design Thinking Quest</h1>
+        <p class="lead">A gamified adventure to learn the d.school design model: notice → empathize → define → ideate → prototype → test → reflect</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="score" id="score">Score: 0</div>
+        <div class="badge" id="badge">Badge: Novice Explorer</div>
+      </div>
+    </header>
+
+    <div class="board">
+      <div class="map stage-card">
+        <h2 style="margin:0">Treasure Map — Choose a Stage</h2>
+        <p style="color:var(--muted);margin-top:4px">Complete the mini-challenges to unlock the lost relic.</p>
+
+        <div class="stages" id="stages"></div>
+
+        <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+          <button id="resetBtn">Restart</button>
+          <div style="color:var(--muted);font-size:13px">Time: <span id="timer">00:00</span></div>
+        </div>
+
+        <div id="stageArea" style="margin-top:12px"></div>
+
+      </div>
+
+      <div class="right">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Indy Log</strong>
+            <small style="color:var(--muted)" id="currentStageLabel">Waiting to start</small>
+          </div>
+          <div id="panelBody" style="margin-top:10px;color:var(--muted);font-size:14px">Select a stage to begin the challenge.</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Badges & Progress</strong>
+            <div style="color:var(--muted)" id="progressText">0/7 complete</div>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap" id="badges"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>
+      Tip: This is designed for classroom play. You can project it, let teams rotate, or embed it as a playable activity on your site.
+    </footer>
+  </div>
+
+<script>
+// --- Game data ---
+const STAGES = [
+  {key:'notice', title:'Notice', desc:'Train your observation skills by spotting differences in a scene.'},
+  {key:'empathize', title:'Empathize', desc:'Step into a persona and choose what they need most.'},
+  {key:'define', title:'Define', desc:'Write a clear problem statement from clues.'},
+  {key:'ideate', title:'Ideate', desc:'Rapidly create multiple wild, useful ideas.'},
+  {key:'prototype', title:'Prototype', desc:'Assemble a quick mockup from parts.'},
+  {key:'test', title:'Test', desc:'Get feedback and answer a quick test.'},
+  {key:'reflect', title:'Reflect', desc:'Think about what you learned and how to improve.'}
+];
+
+let score = 0;let completed = {};let startTime = Date.now();let timerInterval;
+
+const stagesEl = document.getElementById('stages');
+const panelBody = document.getElementById('panelBody');
+const currentStageLabel = document.getElementById('currentStageLabel');
+const scoreEl = document.getElementById('score');
+const badgeEl = document.getElementById('badge');
+const progressText = document.getElementById('progressText');
+const badgesEl = document.getElementById('badges');
+const stageArea = document.getElementById('stageArea');
+
+function startTimer(){clearInterval(timerInterval);startTime = Date.now();timerInterval=setInterval(()=>{
+  const s=Math.floor((Date.now()-startTime)/1000);const mm=String(Math.floor(s/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');document.getElementById('timer').textContent=mm+':'+ss;
+},250);}
+
+function updateScore(delta){score+=delta;scoreEl.textContent='Score: '+score;updateBadge();}
+function updateBadge(){if(score<50) badgeEl.textContent='Badge: Novice Explorer';
+else if(score<120) badgeEl.textContent='Badge: Seasoned Seeker';
+else badgeEl.textContent='Badge: Master Archeologist';}
+
+function renderStages(){stagesEl.innerHTML='';STAGES.forEach((s,i)=>{
+  const el=document.createElement('div');el.className='stage'+(completed[s.key]?' completed':'');el.dataset.key=s.key;el.innerHTML=`<h3>${s.title}</h3><div style="color:var(--muted);font-size:13px">${s.desc}</div>`;
+  el.addEventListener('click', ()=>{openStage(s.key)});
+  stagesEl.appendChild(el);
+});updateProgress();}
+
+function updateProgress(){const done=Object.keys(completed).length;progressText.textContent=`${done}/7 complete`;badgesEl.innerHTML='';STAGES.forEach(s=>{const b=document.createElement('div');b.className='badge';b.style.opacity= completed[s.key]?1:0.25;b.textContent=s.title;b.style.padding='6px 8px';badgesEl.appendChild(b);});}
+
+function openStage(key){currentStageLabel.textContent=key.charAt(0).toUpperCase()+key.slice(1);stageArea.innerHTML='';panelBody.textContent='Loading challenge...';startTimer();
+  if(key==='notice') renderNotice();
+  else if(key==='empathize') renderEmpathize();
+  else if(key==='define') renderDefine();
+  else if(key==='ideate') renderIdeate();
+  else if(key==='prototype') renderPrototype();
+  else if(key==='test') renderTest();
+  else if(key==='reflect') renderReflect();
+}
+
+// --- Stage implementations ---
+function renderNotice(){panelBody.textContent='Notice: Look carefully and select the items that changed between two treasure camp images.';
+  const html = `
+    <div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='160'><rect width='100%' height='100%' fill='%23131a1f'/><text x='12' y='24' fill='%23c9a24b' font-size='18'>Camp - Scene A</text><circle cx='60' cy='90' r='10' fill='%23e6eef6'/></svg>" style="width:100%;border-radius:8px;">
+        </div>
+        <div style="width:200px">
+          <div class="notice-grid" id="noticeGrid"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  stageArea.innerHTML = html;
+  const choices = ['Broken Pot','Missing Map','Extra Torch','Loose Gem','Hidden Snake','Opened Chest','Flag Tattered','Footprints'];
+  const correct = new Set(['Missing Map','Extra Torch','Footprints']);
+  const grid = document.getElementById('noticeGrid');
+  choices.forEach(c=>{const img=document.createElement('div');img.tabIndex=0;img.textContent=c;img.className='chip';img.style.padding='10px';img.addEventListener('click', ()=>{
+    if(correct.has(c)){img.classList.add('correct');img.style.outline='3px solid rgba(34,197,94,0.9)';updateScore(10);correct.delete(c);checkNoticeDone(correct);} else {img.classList.add('wrong');updateScore(-4);} });grid.appendChild(img);});
+}
+function checkNoticeDone(set){if(set.size===0){markComplete('notice','You spotted the changes! +30 bonus');updateScore(30);}}
+
+function renderEmpathize(){panelBody.textContent='Empathize: Read the persona and choose the needs that match.';
+  stageArea.innerHTML=`<div><strong>Persona: "Marco" — a trader who just arrived after a long caravan. He wants: </strong>
+    <div style='margin-top:8px' id='empathizeOptions'></div>
+  </div>`;
+  const options=['Food','Shelter','Map to ruins','To trade gems','A guide','Money for animals'];
+  const wants=new Set(['Food','A guide','Map to ruins']);
+  const container=document.getElementById('empathizeOptions');
+  options.forEach(o=>{const btn=document.createElement('button');btn.className='chip';btn.textContent=o;btn.addEventListener('click', ()=>{if(wants.has(o)){btn.style.border='2px solid rgba(34,197,94,0.9)';updateScore(12);wants.delete(o);if(wants.size===0){markComplete('empathize','You empathized well! +20 bonus');updateScore(20);}} else {btn.style.opacity=0.5;updateScore(-6);}});container.appendChild(btn);});
+}
+
+function renderDefine(){panelBody.textContent='Define: Build a one-sentence Point Of View from the clues.';
+  stageArea.innerHTML=`<div><div><p style='color:var(--muted)'>Clues: villagers worry about thieves; the caravan lacks maps; Marco is confused about where to sell goods.</p>
+    <label>Write a concise POV:</label>
+    <textarea id='pov' style='width:100%;height:90px;border-radius:6px;background:rgba(255,255,255,0.02);color:#fff;padding:8px'></textarea>
+    <div style='margin-top:8px'><button id='submitPov'>Submit POV</button></div>
+  </div></div>`;
+  document.getElementById('submitPov').addEventListener('click', ()=>{const text=document.getElementById('pov').value.trim();if(text.length<20){alert('Try a longer, clearer POV (>=20 characters).');updateScore(-5);return;} markComplete('define','Good POV — +25');updateScore(25);});
+}
+
+function renderIdeate(){panelBody.textContent='Ideate: Generate as many quick ideas as possible. 1 point each; creativity bonus if >6 ideas.';
+  stageArea.innerHTML=`<div><label>Type an idea and press Add:</label><div style='display:flex;gap:6px;margin-top:6px'><input id='ideaInput' placeholder='Build a portable map stand' style='flex:1;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02)'><button id='addIdea'>Add</button></div>
+    <div id='ideasList' style='margin-top:8px;display:flex;flex-direction:column;gap:6px'></div>
+  </div>`;
+  const list=document.getElementById('ideasList');const input=document.getElementById('ideaInput');let count=0;
+  document.getElementById('addIdea').addEventListener('click', ()=>{const v=input.value.trim();if(!v) return;const el=document.createElement('div');el.textContent=v;el.className='chip';list.appendChild(el);input.value='';count++;updateScore(1);if(count>=7){markComplete('ideate','Idea spree! +20 bonus');updateScore(20);} });
+}
+
+function renderPrototype(){panelBody.textContent='Prototype: Drag parts onto the canvas to sketch a quick tool for Marco.';
+  stageArea.innerHTML=`<div><div class='prototype-canvas' id='canvas'>Drop parts here</div>
+    <div class='draggables' id='parts'></div>
+  </div>`;
+  const parts=['Map','Stick','Cloth','String','Compass','Pocket'];
+  const partsEl=document.getElementById('parts');parts.forEach(p=>{const d=document.createElement('div');d.draggable=true;d.className='chip';d.textContent=p;d.addEventListener('dragstart', e=>{e.dataTransfer.setData('text/plain',p)});partsEl.appendChild(d);});
+  const canvas=document.getElementById('canvas');canvas.addEventListener('dragover', e=>e.preventDefault());canvas.addEventListener('drop', e=>{e.preventDefault();const p=e.dataTransfer.getData('text/plain');const el=document.createElement('div');el.textContent=p;el.className='chip';el.style.margin='6px';canvas.appendChild(el);updateScore(5);if(canvas.querySelectorAll('.chip').length>=3){markComplete('prototype','Prototype assembled! +20');updateScore(20);} });
+}
+
+function renderTest(){panelBody.textContent='Test: Answer quick feedback questions from Marco about the prototype.';
+  stageArea.innerHTML=`<div><p style='color:var(--muted)'>Marco tested your prototype. Did it meet his needs?</p>
+    <div style='display:flex;gap:8px'><button id='yes'>Yes — He loved it</button><button id='no'>No — Needs work</button></div>
+    <div id='testFeedback' style='margin-top:8px;color:var(--muted)'></div>
+  </div>`;
+  document.getElementById('yes').addEventListener('click', ()=>{markComplete('test','Test successful! +30');updateScore(30);document.getElementById('testFeedback').textContent='Marco says: "This helps me travel and trade more safely."';});
+  document.getElementById('no').addEventListener('click', ()=>{updateScore(-10);document.getElementById('testFeedback').textContent='Marco says: "It needs a better strap and clearer map."';});
+}
+
+function renderReflect(){panelBody.textContent='Reflect: Write 3 takeaways about what you learned and how to improve.';
+  stageArea.innerHTML=`<div><ol><li><input placeholder='Takeaway 1' style='width:100%'></li><li><input placeholder='Takeaway 2' style='width:100%'></li><li><input placeholder='Takeaway 3' style='width:100%'></li></ol><div style='margin-top:8px'><button id='submitReflect'>Submit Reflection</button></div></div>`;
+  document.getElementById('submitReflect').addEventListener('click', ()=>{markComplete('reflect','Reflection complete — +25');updateScore(25);});
+}
+
+function markComplete(key,msg){if(completed[key]) return;completed[key]=true;panelBody.textContent=msg||'Completed!';updateProgress();if(Object.keys(completed).length===7){finishAdventure();}}
+
+function finishAdventure(){panelBody.innerHTML=`<div><h3>Relic Unlocked!</h3><p>You completed all stages. Total Score: ${score}</p><p>Great job applying the design thinking process — consider rotating group roles next time (note-taker, interviewer, prototype builder).</p></div>`;updateScore(50);} 
+
+// reset
+function resetGame(){score=0;completed={};startTimer();renderStages();panelBody.textContent='Select a stage to begin the challenge.';currentStageLabel.textContent='Waiting';scoreEl.textContent='Score: 0';badgeEl.textContent='Badge: Novice Explorer';stageArea.innerHTML='';}
+
+// init
+renderStages();startTimer();document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+</script>
+</body>
+</html>
